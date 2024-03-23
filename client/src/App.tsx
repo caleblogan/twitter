@@ -3,46 +3,21 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { UserContext } from './context';
 import { useEffect, useState } from 'react';
 import { ApiUser } from '../../server/src/models/UserModel';
-import Client from './pages/Client/Client';
-import HomePage from './pages/HomePage';
-import DMsPage from './pages/DMsPage';
-import ActivityPage from './pages/ActivityPage';
-import LaterPage from './pages/LaterPage';
 import { getMe } from './api/users';
-import Redirect from './components/Redirect';
-import ChannelsPage from './pages/ChannelsPage';
+import LoginPage from './pages/LoginPage';
+import Feed from './pages/FeedPage';
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Redirect to="/client" />
-  },
-  {
-    path: "/client/:workspaceId?",
-    element: <Client />,
-    children: [
-      {
-        path: ":channelId?",
-        element: <HomePage />
-      },
-      {
-        path: "dms",
-        element: <DMsPage />
-      },
-      {
-        path: "activity",
-        element: <ActivityPage />
-      },
-      {
-        path: "later",
-        element: <LaterPage />
-      },
-      {
-        path: "channels",
-        element: <ChannelsPage />
-      },
-    ]
+    element: <LoginPage />
+  }, {
+    path: "/feed",
+    element: <Feed />
+  }, {
+    path: "/:username",
+    element: <Feed />
   }
 ]);
 

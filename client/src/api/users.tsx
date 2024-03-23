@@ -1,4 +1,3 @@
-import ChannelModel from "../../../server/src/models/ChannelModel"
 import { ApiUser } from "../../../server/src/models/UserModel"
 import Api from "./api"
 
@@ -23,9 +22,4 @@ export async function logout(): Promise<{ message: string }> {
 
 export async function loginAnon(): Promise<ApiUser> {
     return await Api.post(`/auth/login/anon`)
-}
-
-export async function listChannels(workspaceId: string): Promise<ChannelModel[]> {
-    const response = await Api.get(`/users/channels?workspaceId=${workspaceId}`)
-    return response?.channels
 }

@@ -10,11 +10,6 @@
 
 @layer base {
   :root {
-    /* Slack colors */
-    --slack-success: #148567;
-
-    /* End Slack colors */
-
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
