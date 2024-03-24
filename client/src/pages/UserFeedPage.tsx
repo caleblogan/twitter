@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PublicUserApi } from "../../../server/src/controllers/users";
 import LogoutButton from "@/components/LogoutButton";
+import { FollowersApi } from "@/api/followers";
 
 export default function UserFeedPage() {
     const { username } = useParams();
@@ -46,7 +47,7 @@ export default function UserFeedPage() {
                 <img src={publicUser?.avatar_url} alt="avatar" className="w-32 rounded-lg absolute bottom-[-60px] ml-4 border-[4px] border-white" />
             </div>
             <div className="flex justify-end">
-                <Button size="default" className="rounded-2xl mt-3 mr-4">follow</Button>
+                <FollowUnfollowButton username={publicUser.username} />
             </div>
             <div className="pl-6 mt-4">
                 <h1 className="text-xl font-bold">{publicUser.name}</h1>
@@ -64,4 +65,32 @@ export default function UserFeedPage() {
             <PostsFeed posts={posts} user={publicUser} />
         </section>
     </MainLayout>
+}
+
+function FollowUnfollowButton({ username }: { username: string }) {
+    const [isFollowing, setIsFollowing] = useState(false)
+
+    useEffect(() => {
+        FollowersApi.isFollowing(username)
+            .then(({ isFollowing }) => setIsFollowing(isFollowing))
+    }, [username])
+
+    async function handleFollow() {
+        await FollowersApi.follow(username)
+    }
+    async function handleUnfollow() {
+        await FollowersApi.unfollow(username)
+    }
+    function handleClick() {
+        if (isFollowing) {
+            handleUnfollow()
+        } else {
+            handleFollow()
+        }
+        setIsFollowing(!isFollowing)
+
+    }
+    return <Button size="default" className="rounded-2xl mt-3 mr-4" onClick={handleClick}>
+        {isFollowing ? "Unfollow" : "Follow"}
+    </Button>
 }

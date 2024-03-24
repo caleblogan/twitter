@@ -8,6 +8,7 @@ import debugRouter from "./controllers/debug"
 import usersRouter from "./controllers/users"
 import postsRouter from "./controllers/posts"
 import feedRouter from "./controllers/feed"
+import followersRouter from "./controllers/followers"
 import { ApiUser } from "./models/UserModel"
 import { sessionParse } from "./session"
 import { ZodSchema } from "zod"
@@ -42,6 +43,7 @@ app.use('/auth', authRouter)
 app.use('/users', usersRouter)
 app.use('/posts', postsRouter)
 app.use('/feed', feedRouter)
+app.use('/followers', followersRouter)
 app.use('/debug', envOnly("dev"), debugRouter)
 
 
