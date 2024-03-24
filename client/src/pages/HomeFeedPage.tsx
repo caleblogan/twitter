@@ -19,10 +19,8 @@ export default function HomeFeedPage() {
     if (!user) return <MainLayout className="border"></MainLayout>
 
     async function loadFeed() {
-        console.log("Load posts")
         const response = await FeedApi.homeFeed()
-        console.log(response)
-        setPosts(response.posts)
+        setPosts(response)
     }
 
     return <MainLayout className="border border-t-0">

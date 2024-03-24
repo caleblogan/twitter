@@ -24,6 +24,7 @@ router.get('/logout', asyncWrapper(async (req, res) => {
         res.json({ message: 'logged out' })
     })
 }))
+
 router.get('/login/github', (req, res) => {
     const redirectUri = encodeURIComponent('http://localhost:3000/auth/callback/github')
     const state = uuid.v4()

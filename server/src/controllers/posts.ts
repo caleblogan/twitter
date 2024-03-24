@@ -10,7 +10,7 @@ const router = Router()
 
 export const createPostReqSchema = z.object({
     body: z.object({
-        text: z.string().min(1)
+        text: z.string().min(1).max(140)
     })
 })
 export const createPostResSchema = z.object({
@@ -21,14 +21,15 @@ export const createPostResSchema = z.object({
         created_at: z.date()
     })
 })
-export type CreatePostReq = z.infer<typeof createPostReqSchema>
-export type CreatePostRes = z.infer<typeof createPostResSchema>
+export type CreatePostReq = z.infer<typeof createPostReqSchema>;
+export type CreatePostRes = z.infer<typeof createPostResSchema>;
 router.post('/', authMiddleware, validateReq(createPostReqSchema), asyncWrapper(async (req, res) => {
     const { id } = req.session.user!
     const { text } = req.body
     const queryResult = await pool.query(
         'INSERT INTO posts (id, text, user_id) VALUES ($1,$2, $3) RETURNING *',
-        [uuid.v4(), text, id])
+        [uuid.v4(), text, id]
+    )
 
     console.log("queryResult", queryResult.rows[0])
 

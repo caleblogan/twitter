@@ -30,7 +30,7 @@ export default function App() {
   }, [])
 
   function loadUser() {
-    getMe()
+    return getMe()
       .then((thisUser) => { setUser(thisUser); })
       .catch((err) => {
         console.error("Failed to load user", err)
