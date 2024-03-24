@@ -1,4 +1,5 @@
-import { Handler, Request, Response } from "express"
+import { Handler, NextFunction, Request, Response } from "express"
+import { ZodSchema } from "zod"
 
 export function asyncWrapper(func: Handler): Handler {
     return (req, res, next) => {
@@ -32,4 +33,29 @@ export function requireJSONHeader(req: Request, res: Response, next: Function) {
     } else {
         res.status(400).json({ error: "content-type header not set to application/json" })
     }
+}
+
+export function validateReq(schema: ZodSchema) {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const parsed = schema.safeParse(req)
+        if (!parsed.success) {
+            const errors = parsed.error.errors
+            console.log(errors)
+            return res.status(400).json({ errors: errors })
+        }
+        next()
+    }
+}
+
+export function jsonValidatedResponse(req: Request, res: Response, next: Function) {
+    res.jsonValidated = (schema: ZodSchema, body?: any) => {
+        const parsed = schema.safeParse(body)
+        if (!parsed.success) {
+            const errors = parsed.error.errors
+            console.log("response parsing:", errors)
+            throw new Error("Internal server error")
+        }
+        return res.json(body)
+    }
+    next()
 }

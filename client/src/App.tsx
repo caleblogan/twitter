@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import { ApiUser } from '../../server/src/models/UserModel';
 import { getMe } from './api/users';
 import LoginPage from './pages/LoginPage';
-import Feed from './pages/FeedPage';
+import UserFeedPage from './pages/UserFeedPage';
+import HomeFeedPage from './pages/HomeFeedPage';
 
 
 const router = createBrowserRouter([
@@ -14,10 +15,10 @@ const router = createBrowserRouter([
     element: <LoginPage />
   }, {
     path: "/feed",
-    element: <Feed />
+    element: <HomeFeedPage />
   }, {
     path: "/:username",
-    element: <Feed />
+    element: <UserFeedPage />
   }
 ]);
 

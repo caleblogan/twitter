@@ -1,19 +1,25 @@
 import express from "express"
 import cors from "cors"
 
-import { envOnly } from "./middleware"
+import { envOnly, jsonValidatedResponse } from "./middleware"
 import { config } from "./config"
 import authRouter from "./controllers/auth"
 import debugRouter from "./controllers/debug"
 import usersRouter from "./controllers/users"
+import postsRouter from "./controllers/posts"
+import feedRouter from "./controllers/feed"
 import { ApiUser } from "./models/UserModel"
 import { sessionParse } from "./session"
+import { ZodSchema } from "zod"
 
 declare global {
     namespace Express {
         interface Locals {
         }
         interface Request {
+        }
+        interface Response {
+            jsonValidated: (schema: ZodSchema, body?: any) => void
         }
     }
 }
@@ -30,9 +36,12 @@ const port = config.port
 app.use(express.json())
 app.use(cors({ credentials: true, origin: true }));
 app.use(sessionParse)
+app.use(jsonValidatedResponse)
 
 app.use('/auth', authRouter)
 app.use('/users', usersRouter)
+app.use('/posts', postsRouter)
+app.use('/feed', feedRouter)
 app.use('/debug', envOnly("dev"), debugRouter)
 
 
