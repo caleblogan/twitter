@@ -7,6 +7,7 @@ import { getMe } from './api/users';
 import LoginPage from './pages/LoginPage';
 import UserFeedPage from './pages/UserFeedPage';
 import HomeFeedPage from './pages/HomeFeedPage';
+import PostPage from './pages/PostPage';
 
 
 const router = createBrowserRouter([
@@ -19,6 +20,9 @@ const router = createBrowserRouter([
   }, {
     path: "/:username",
     element: <UserFeedPage />
+  }, {
+    path: "/:username/status/:postId",
+    element: <PostPage />
   }
 ]);
 

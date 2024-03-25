@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { yearMonthFormat } from "@/lib/dates";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { PublicUserApi } from "../../../server/src/controllers/users";
 import LogoutButton from "@/components/LogoutButton";
 import { FollowersApi } from "@/api/followers";
+import { ArrowLeftIcon } from "lucide-react";
 
 export default function UserFeedPage() {
     const { username } = useParams();
@@ -33,10 +34,15 @@ export default function UserFeedPage() {
     if (!publicUser) return <MainLayout className="border"></MainLayout>
 
     return <MainLayout className="border">
-        <header className="stick h-[53px] p-2 flex justify-between">
-            <div>
-                <h1 className="text-xl font-bold ml-4">{publicUser.name}</h1>
-                <h2 className="text-sm text-gray-500 ml-4 mt-[-2px]">95k posts</h2>
+        <header className="stick h-[53px] p-2 flex justify-between items-center">
+            <div className="flex">
+                <Link to="/feed">
+                    <ArrowLeftIcon className="w-6 h-6 ml-4 mt-3" />
+                </Link>
+                <div>
+                    <h1 className="text-xl font-bold ml-4">{publicUser.name}</h1>
+                    <h2 className="text-sm text-gray-500 ml-4 mt-[-2px]">95k posts</h2>
+                </div>
             </div>
             <LogoutButton className="mr-2" />
         </header>

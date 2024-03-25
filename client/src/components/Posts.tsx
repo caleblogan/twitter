@@ -25,7 +25,7 @@ export default function PostsFeed({ posts, user }: { posts: UserPost[], user: Us
     </div>
 }
 
-function Post({ id, username, name, text, avatar_url, created_at, onClick }: UserPost & { onClick: (username: string, id: string) => void }) {
+export function Post({ id, username, name, text, avatar_url, created_at, onClick }: UserPost & { onClick: (username: string, id: string) => void }) {
     return <article onClick={() => onClick(username, id)} className="hover:bg-slate-100 rounded-md last:border-none border-b p-4 flex cursor-pointer">
         <Link to={`/@${username}`} onClick={e => e.stopPropagation()}><img src={avatar_url} alt="avatar" className="w-10 h-10 rounded-lg" /></Link>
         <div className="ml-2 grow">

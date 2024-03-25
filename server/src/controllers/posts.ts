@@ -36,4 +36,36 @@ router.post('/', authMiddleware, validateReq(createPostReqSchema), asyncWrapper(
     res.jsonValidated(createPostResSchema, { post: queryResult.rows[0] })
 }))
 
+router.get('/:postId', validateReq(z.object({
+    params: z.object({
+        postId: z.string().uuid()
+    })
+})), asyncWrapper(async (req, res) => {
+    const postId = req.params.postId
+    const queryResult = await pool.query(
+        'Select * FROM posts JOIN users ON users.id=posts.user_id WHERE posts.id = $1',
+        [postId]
+    )
+
+    console.log("queryResult", queryResult.rows[0])
+
+    res.jsonValidated(z.object({}), { post: queryResult.rows[0] })
+}))
+
+router.get('/:postId/comments', validateReq(z.object({
+    params: z.object({
+        postId: z.string().uuid()
+    })
+})), asyncWrapper(async (req, res) => {
+    const postId = req.params.postId
+    const queryResult = await pool.query(
+        'Select *, comments.id FROM comments JOIN users ON users.id=comments.user_id WHERE comments.post_id = $1 ORDER BY comments.created_at DESC',
+        [postId]
+    )
+
+    console.log("COMMENTS:", queryResult.rows)
+
+    res.jsonValidated(z.object({}), { comments: queryResult.rows })
+}))
+
 export default router
