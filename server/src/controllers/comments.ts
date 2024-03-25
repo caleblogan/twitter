@@ -36,4 +36,57 @@ router.post('/', authMiddleware, validateReq(createCommentReqSchema), asyncWrapp
     res.jsonValidated(createCommentResSchema, { comment: queryResult.rows[0] })
 }))
 
+router.post('/:commentId/likes:toggle', authMiddleware, validateReq(z.object({
+    params: z.object({
+        commentId: z.string()
+    })
+})), asyncWrapper(async (req, res) => {
+    const { user } = req.session
+    if (!user) return
+    const commentId = req.params.commentId
+    const queryResult = await pool.query(
+        'Select * FROM comments_likes WHERE comment_id = $1 AND user_id = $2',
+        [commentId, user.id]
+    )
+    if (queryResult.rows.length === 0) {
+        await pool.query(
+            'Insert INTO comments_likes (comment_id, user_id) VALUES ($1, $2)',
+            [commentId, user.id]
+        )
+    } else {
+        await pool.query('DELETE FROM comments_likes WHERE comment_id=$1 AND user_id=$2', [commentId, user.id])
+    }
+    res.jsonValidated(z.object({ isLiked: z.boolean() }), { isLiked: !queryResult.rows.length })
+}))
+
+router.get('/:commentId/likes', validateReq(z.object({
+    params: z.object({
+        commentId: z.string()
+    })
+})), asyncWrapper(async (req, res) => {
+    const commentId = req.params.commentId
+    const queryResult = await pool.query(
+        'Select COUNT(*) as count FROM comments_likes WHERE comment_id = $1',
+        [commentId]
+    )
+
+    res.jsonValidated(z.object({ likes: z.number() }), { likes: +queryResult.rows[0].count })
+}))
+
+router.get('/:commentId/likes/me', authMiddleware, validateReq(z.object({
+    params: z.object({
+        commentId: z.string()
+    })
+})), asyncWrapper(async (req, res) => {
+    const { user } = req.session
+    if (!user) return
+    const commentId = req.params.commentId
+    const queryResult = await pool.query(
+        'Select * FROM comments_likes WHERE comment_id = $1 AND user_id = $2',
+        [commentId, user.id]
+    )
+
+    res.jsonValidated(z.object({ isLiked: z.boolean() }), { isLiked: !!queryResult.rows.length })
+}))
+
 export default router

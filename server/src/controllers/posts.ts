@@ -43,7 +43,7 @@ router.get('/:postId', validateReq(z.object({
 })), asyncWrapper(async (req, res) => {
     const postId = req.params.postId
     const queryResult = await pool.query(
-        'Select * FROM posts JOIN users ON users.id=posts.user_id WHERE posts.id = $1',
+        'Select *, posts.id FROM posts JOIN users ON users.id=posts.user_id WHERE posts.id = $1',
         [postId]
     )
 
