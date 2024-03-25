@@ -29,7 +29,7 @@ export default function HomeFeedPage() {
         </header>
         <section className="mt-8 p-4">
             <h1 className="p-4 text-xl font-bold">Posts</h1>
-            <PostsFeed posts={posts} user={user} />
+            <PostsFeed posts={posts} />
         </section>
     </MainLayout>
 }

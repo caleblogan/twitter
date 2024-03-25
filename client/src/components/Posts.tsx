@@ -15,13 +15,13 @@ type User = {
 
 export type UserPost = Post & User
 
-export default function PostsFeed({ posts, user }: { posts: UserPost[], user: User }) {
+export default function PostsFeed({ posts }: { posts: UserPost[] }) {
     const navigate = useNavigate()
     function handleClick(username: string, postId: string) {
         navigate(`/@${username}/status/${postId}`)
     }
     return <div className="">
-        {posts.map((post, i) => <Post key={i} {...post} {...user} onClick={handleClick} />)}
+        {posts.map((post, i) => <Post key={i} {...post} onClick={handleClick} />)}
     </div>
 }
 

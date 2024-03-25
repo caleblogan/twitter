@@ -25,15 +25,28 @@ export type HomeFeedReq = z.infer<typeof getHomeFeedReqSchema>;
 export type HomeFeedRes = z.infer<typeof getHomeFeedResSchema>;
 router.get('/', authMiddleware, validateReq(getHomeFeedReqSchema), asyncWrapper(async (req, res) => {
     const { user } = req.session
-    // TODO: This should get posts from followers instead of a users own posts
-    const queryResult = await pool.query(
-        'SELECT * FROM posts WHERE user_id=$1 ORDER BY created_at DESC',
+    const followingQuery = await pool.query(
+        'SELECT followee_id from followers WHERE follower_id=$1',
         [user!.id]
     )
+    const posts: HomeFeedRes["posts"] = []
+    await Promise.all(followingQuery.rows.map(async ({ followee_id }) => {
+        const queryResult = await pool.query(
+            'SELECT * FROM posts JOIN users ON posts.user_id=users.id WHERE user_id=$1 ORDER BY posts.created_at DESC',
+            [followee_id]
+        )
+        posts.push(...queryResult.rows)
+    }))
 
-    console.log("queryResult", queryResult.rows[0])
+    const userPosts = await pool.query(
+        'SELECT * FROM posts JOIN users on users.id=posts.user_id WHERE user_id=$1 ORDER BY posts.created_at DESC',
+        [user!.id]
+    )
+    posts.push(...userPosts.rows)
 
-    res.jsonValidated(getHomeFeedResSchema, { posts: queryResult.rows })
+    posts.sort((a, b) => b.created_at < a.created_at ? -1 : 1)
+
+    res.jsonValidated(getHomeFeedResSchema, { posts })
 }))
 
 router.get('/:username', asyncWrapper(async (req, res) => {
@@ -45,7 +58,7 @@ router.get('/:username', asyncWrapper(async (req, res) => {
         return
     }
     const queryResult = await pool.query(
-        'SELECT * FROM posts WHERE user_id=$1 ORDER BY created_at DESC',
+        'SELECT * FROM posts JOIN users ON users.id=posts.user_id WHERE user_id=$1 ORDER BY posts.created_at DESC',
         [user.id]
     )
 

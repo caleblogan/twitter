@@ -38,7 +38,7 @@ router.post('/', authMiddleware, validateReq(createPostReqSchema), asyncWrapper(
 
 router.get('/:postId', validateReq(z.object({
     params: z.object({
-        postId: z.string().uuid()
+        postId: z.string()
     })
 })), asyncWrapper(async (req, res) => {
     const postId = req.params.postId
@@ -54,7 +54,7 @@ router.get('/:postId', validateReq(z.object({
 
 router.get('/:postId/comments', validateReq(z.object({
     params: z.object({
-        postId: z.string().uuid()
+        postId: z.string()
     })
 })), asyncWrapper(async (req, res) => {
     const postId = req.params.postId

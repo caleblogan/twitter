@@ -10,16 +10,16 @@ const router = Router()
 export const createCommentReqSchema = z.object({
     body: z.object({
         text: z.string().min(1).max(140),
-        post_id: z.string().uuid()
+        post_id: z.string()
     })
 })
 export const createCommentResSchema = z.object({
     post: z.object({
-        id: z.string().uuid(),
+        id: z.string(),
         text: z.string(),
-        user_id: z.string().uuid(),
-        post_id: z.string().uuid(),
-        parent_comment_id: z.string().uuid().nullable(),
+        user_id: z.string(),
+        post_id: z.string(),
+        parent_comment_id: z.string().nullable(),
         created_at: z.date()
     })
 })

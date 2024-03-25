@@ -68,7 +68,7 @@ export default function UserFeedPage() {
 
         <section className="mt-4 p-4">
             <h1 className="p-4 text-xl font-bold">Posts</h1>
-            <PostsFeed posts={posts} user={publicUser} />
+            <PostsFeed posts={posts} />
         </section>
     </MainLayout>
 }
