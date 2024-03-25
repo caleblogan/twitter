@@ -32,14 +32,14 @@ router.get('/', authMiddleware, validateReq(getHomeFeedReqSchema), asyncWrapper(
     const posts: HomeFeedRes["posts"] = []
     await Promise.all(followingQuery.rows.map(async ({ followee_id }) => {
         const queryResult = await pool.query(
-            'SELECT * FROM posts JOIN users ON posts.user_id=users.id WHERE user_id=$1 ORDER BY posts.created_at DESC',
+            'SELECT *, posts.id FROM posts JOIN users ON posts.user_id=users.id WHERE user_id=$1 ORDER BY posts.created_at DESC',
             [followee_id]
         )
         posts.push(...queryResult.rows)
     }))
 
     const userPosts = await pool.query(
-        'SELECT * FROM posts JOIN users on users.id=posts.user_id WHERE user_id=$1 ORDER BY posts.created_at DESC',
+        'SELECT *, posts.id FROM posts JOIN users on users.id=posts.user_id WHERE user_id=$1 ORDER BY posts.created_at DESC',
         [user!.id]
     )
     posts.push(...userPosts.rows)
@@ -58,7 +58,7 @@ router.get('/:username', asyncWrapper(async (req, res) => {
         return
     }
     const queryResult = await pool.query(
-        'SELECT * FROM posts JOIN users ON users.id=posts.user_id WHERE user_id=$1 ORDER BY posts.created_at DESC',
+        'SELECT *, posts.id FROM posts JOIN users ON users.id=posts.user_id WHERE user_id=$1 ORDER BY posts.created_at DESC',
         [user.id]
     )
 

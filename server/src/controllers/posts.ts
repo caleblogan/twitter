@@ -47,8 +47,6 @@ router.get('/:postId', validateReq(z.object({
         [postId]
     )
 
-    console.log("queryResult", queryResult.rows[0])
-
     res.jsonValidated(z.object({}), { post: queryResult.rows[0] })
 }))
 
@@ -63,9 +61,60 @@ router.get('/:postId/comments', validateReq(z.object({
         [postId]
     )
 
-    console.log("COMMENTS:", queryResult.rows)
-
     res.jsonValidated(z.object({}), { comments: queryResult.rows })
+}))
+
+router.post('/:postId/likes:toggle', authMiddleware, validateReq(z.object({
+    params: z.object({
+        postId: z.string()
+    })
+})), asyncWrapper(async (req, res) => {
+    const { user } = req.session
+    if (!user) return
+    const postId = req.params.postId
+    const queryResult = await pool.query(
+        'Select * FROM posts_likes WHERE post_id = $1 AND user_id = $2',
+        [postId, user.id]
+    )
+    if (queryResult.rows.length === 0) {
+        await pool.query(
+            'Insert INTO posts_likes (post_id, user_id) VALUES ($1, $2)',
+            [postId, user.id]
+        )
+    } else {
+        await pool.query('DELETE FROM posts_likes WHERE post_id=$1 AND user_id=$2', [postId, user.id])
+    }
+    res.jsonValidated(z.object({ isLiked: z.boolean() }), { isLiked: !queryResult.rows.length })
+}))
+
+router.get('/:postId/likes', validateReq(z.object({
+    params: z.object({
+        postId: z.string()
+    })
+})), asyncWrapper(async (req, res) => {
+    const postId = req.params.postId
+    const queryResult = await pool.query(
+        'Select COUNT(*) as count FROM posts_likes WHERE post_id = $1',
+        [postId]
+    )
+
+    res.jsonValidated(z.object({ likes: z.number() }), { likes: +queryResult.rows[0].count })
+}))
+
+router.get('/:postId/likes/me', authMiddleware, validateReq(z.object({
+    params: z.object({
+        postId: z.string()
+    })
+})), asyncWrapper(async (req, res) => {
+    const { user } = req.session
+    if (!user) return
+    const postId = req.params.postId
+    const queryResult = await pool.query(
+        'Select * FROM posts_likes WHERE post_id = $1 AND user_id = $2',
+        [postId, user.id]
+    )
+
+    res.jsonValidated(z.object({ isLiked: z.boolean() }), { isLiked: !!queryResult.rows.length })
 }))
 
 export default router

@@ -1,4 +1,7 @@
+import { PostsApi } from "@/api/posts";
 import { formatDateSince } from "@/lib/dates";
+import { Heart } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 type Post = {
@@ -36,7 +39,37 @@ export function Post({ id, username, name, text, avatar_url, created_at, onClick
                 <p className="text-gray-500">{formatDateSince(created_at)}</p>
             </div>
             <p className="mt-1">{text}</p>
+            <Likes postId={id} />
         </div>
     </article >
 }
 
+function Likes({ postId }: { postId: string }) {
+    const [isLiked, setIsLiked] = useState(false)
+    const [likes, setLikes] = useState(0)
+
+    useEffect(() => {
+        PostsApi.getLikes(postId).then(likes => {
+            setLikes(likes)
+        })
+        PostsApi.getIsLikedMe(postId).then(isLiked => {
+            setIsLiked(isLiked)
+        })
+    }, [postId])
+
+    async function handleToggleLike(e: React.MouseEvent) {
+        e.stopPropagation()
+        console.log("like")
+        // TODO: Handle race conditions
+        const isLikedResponse = await PostsApi.toggleLikePost(postId)
+        setIsLiked(isLikedResponse)
+        setLikes(prevLikes => prevLikes + (isLikedResponse ? 1 : -1))
+    }
+
+    return <div className="flex items-center text-gray-500">
+        <div className="p-2 -ml-2 flex items-center gap-1" onClick={handleToggleLike}>
+            <Heart size={16} fill={isLiked ? "gray" : "none"} />
+            <p className="text-sm">{likes}</p>
+        </div>
+    </div>
+}

@@ -17,4 +17,19 @@ export namespace PostsApi {
         const data = await Api.get(`/posts/${postId}/comments`)
         return data.comments
     }
+
+    export async function toggleLikePost(postId: string): Promise<boolean> {
+        const data = await Api.post(`/posts/${postId}/likes:toggle`)
+        return data.isLiked
+    }
+
+    export async function getLikes(postId: string): Promise<number> {
+        const data = await Api.get(`/posts/${postId}/likes`)
+        return data.likes
+    }
+
+    export async function getIsLikedMe(postId: string): Promise<boolean> {
+        const data = await Api.get(`/posts/${postId}/likes/me`)
+        return data.isLiked
+    }
 }

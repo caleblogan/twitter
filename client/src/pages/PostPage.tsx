@@ -8,17 +8,19 @@ import { Comments, UserComment } from "@/components/Comments";
 import { CommentsApi } from "@/api/comments";
 
 export default function PostPage() {
-    const { username, postId } = useParams();
+    const { postId } = useParams();
     const [post, setPost] = useState<UserPost | null>(null);
     const [comments, setComments] = useState<UserComment[]>([])
 
+    console.log("PostPage", postId, post)
+
     useEffect(() => {
-        if (!username) return
-        PostsApi.get(postId!)
+        if (!postId) return
+        PostsApi.get(postId)
             .then(response => {
                 setPost(response)
             })
-    }, [username])
+    }, [postId])
 
     useEffect(() => {
         loadComments()
